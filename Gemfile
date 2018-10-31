@@ -26,9 +26,43 @@ gem 'puma', '~> 3.11'
 gem 'bootsnap', '>= 1.1.0', require: false
 
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
+gem 'rack-attack'
+# Use Redis adapter to run Action Cable in production
+gem 'redis'
+# Result pagination
+gem 'will_paginate', '~> 3.1.0'
+# Authorization
+gem 'cancancan', '~> 2.0'
+# Follow user
+gem 'acts_as_follower', github: 'tcocca/acts_as_follower', branch: 'master'
+# Like content
+gem 'acts_as_votable', '~> 0.11.1'
+# Integration with Searchkick
+gem 'searchkick'
+# Cron programming
+gem 'whenever', require: false
+# Use ActiveModel has_secure_password
+gem 'bcrypt'
+# jwt authentication
+gem 'knock'
+# Serializer json
+gem 'active_model_serializers'
+
+# Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
 # gem 'rack-cors'
 
+group :test do
+  # Generate record based in a model
+  gem 'factory_bot_rails'
+  # Fakker datas
+  gem 'ffaker'
+  # Clean db adter test
+  gem 'database_cleaner'
+end
+
 group :development, :test do
+  gem 'rspec-rails', '~> 3.8'
+  gem 'rspec-json_expectations'
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
 end
