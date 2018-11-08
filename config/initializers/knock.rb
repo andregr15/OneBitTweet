@@ -58,5 +58,6 @@ Knock.setup do |config|
   # config.not_found_exception_class_name = 'ActiveRecord::RecordNotFound'
   config.token_lifetime = 1.day
 
+  # ajust to knock work on rails 5.2
   config.token_secret_signature_key = -> { Rails.application.credentials.secret_key_base }
 end
