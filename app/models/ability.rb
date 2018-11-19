@@ -28,5 +28,11 @@ class Ability
     #
     # See the wiki for details:
     # https://github.com/CanCanCommunity/cancancan/wiki/Defining-Abilities
+
+    can :read, Tweet
+    can :read, User
+    return unless user
+    can :manage, Tweet, user_id: user.id
+    can :manage, ser, id: user.id
   end
 end
