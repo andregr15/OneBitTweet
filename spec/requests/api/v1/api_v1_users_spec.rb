@@ -124,7 +124,7 @@ RSpec.describe "Api::V1::Users", type: :request do
         before do
           user = create(:user)
           user_id = -1
-          delete "/api/v1/users/#{user_id}", headers: header_with_authentication(@user)
+          delete "/api/v1/users/#{user_id}", headers: header_with_authentication(user)
         end
 
         it 'should have returned not found http status' do
@@ -146,7 +146,7 @@ RSpec.describe "Api::V1::Users", type: :request do
       end
 
       it 'should have returned the right user in json' do
-        expect(json).to include_json(user_params.except(:password))
+        expect(json).to include_json(@user_params.except(:password))
       end
 
       it 'should have created the user' do
@@ -220,6 +220,93 @@ RSpec.describe "Api::V1::Users", type: :request do
         end
       end
     end
+  end
+
+  describe 'GET /api/v1/users/:id/following?page=:page' do
+    context 'when user exists' do
+      before do
+        @user = create(:user)
+        following_number = Random.rand(15..25)
+
+        following_number.times { user.follow(create(:user)) }
+      end
+
+      it 'should have returned the http status success' do
+        get "/api/v1/users/#{@user.id}/following?pages=1"
+        expect_response(:success)
+      end
+
+      it 'should have returned the right following' do
+        get "/api/v1/users/#{@user.id}/following?page=1"
+        expect(json).to eql(each_serialized(Api::V1::UserSerializer, @user.following_users[0..14]))
+      end
+
+      it 'should have returned 15 elements on first page' do
+        get "/api/v1/users/#{@user.id}/following?page=1"
+        expect(json.count).to eql(15)
+      end
+
+      it 'should have returned the remaining elements on second page' do
+        get "/api/v1/users/#{@user.id}/following?page=2"
+        remaining = @user.following_users.count -15
+        expect(json.count).to eql(remaining)
+      end
+    end
+
+    context 'when user do not exists' do
+      before do
+        user_id = -1
+        get "/api/v1/users/#{user_id}/following?page=1"
+      end
+      
+      it 'should have returned the http status not found' do
+        expect_status(:not_found)
+      end
+    end
+  end
+
+  describe 'GET /api/v1/users/:id/followers?page=:page' do
+    context 'when user exists' do
+      before do
+        @user = create(:user)
+        followers_number = Random.rand(15..25)
+
+        followers_number.times { create(:user).follow(@user) }
+      end
+
+      it 'should have returned the http status success' do
+        get "/api/v1/users/#{@user.id}/followers?page=1"
+        expect_status(:success)
+      end
+
+      it 'should have returned the right followers' do
+        get "/api/v1/users/#{@user.id}/followers?page=1"
+        expect(json).to eql(each_serialized(Api::V1::UserSerializer, @user.followers[0..14]))
+      end
+
+      it 'should have returned 15 elements on first page' do
+        get "/api/v1/users/#{@user.id}/followers?pages=1"
+        expect(json.count).to eql(15)
+      end
+
+      it 'should have returned the remaining elements on second page' do
+        get "/api/v1/users/#{@user.id}/followers?page=2"
+        remaining = @user.followers.count - 15
+        expect(json.count).to eql(remaining)
+      end
+    end
+
+    context 'when user do not exists' do
+      before do
+        user_id = -1
+        get "/api/v1/users/#{user_id}/followers?page=1"
+      end
+
+      it 'should have returned the http status not found' do
+        expect_status(:not_found)
+      end
+    end
+
   end
 
 end
