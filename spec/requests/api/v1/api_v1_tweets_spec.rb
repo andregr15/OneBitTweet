@@ -112,4 +112,156 @@ RSpec.describe "Api::V1::Tweets", type: :request do
     end
 
   end
+
+  describe 'POST /api/v1/tweets/' do
+    context 'Unauthenticated' do
+      it_behaves_like :deny_without_authorization, :post, '/api/v1/tweets/-1'
+    end
+
+    context 'Authenticated' do
+      before do
+        @user = create(:user)
+      end
+
+      context 'with valid params' do
+        context 'when the tweet is regular' do
+          before do
+            @tweet_params = attributes_for(:tweet)
+            post '/api/v1/tweets/', params: { tweet: @tweet_params }, headers: header_with_authentication(@user)
+          end
+
+          it 'should have returned the http status created' do
+            expect_status(:created)
+          end
+
+          it 'should have returned the right tweet in json' do
+            expect(json).to include_json(@tweet_params)
+          end
+
+          it 'should have created the tweet' do
+            expect(Tweet.count).to eql(1)
+          end
+        end
+
+        context 'when the tweet is a retweet' do
+          before do
+            @tweet_original = create(:tweet)
+            @tweet_params = attributes_for(:tweet, tweet_original_id: @tweet_original.id)
+
+            post '/api/v1/tweets/', params: { tweet: @tweet_params }, headers: header_with_authentication(@user)
+          end
+
+          it 'should have returned the http status created' do
+            expect_status(:created)
+          end
+
+          it 'should have returned the right tweet in json' do
+            expect(json).to include_json(@tweet_params)
+          end
+
+          it 'should have returned the right original tweet in json' do
+            expect(json['tweet_original']).to eql(serialized(Api::V1::TweetSerializer, @tweet_original))
+          end
+
+          it 'should have created the tweet' do
+            expect(Tweet.count).to eql(1)
+          end
+        end
+      end
+
+      context 'with invalid params' do
+        before do
+          tweet_params = { foo: :bar }
+          post '/api/v1/tweets/', params: { tweet: tweet_params}, headers: header_with_authentication(@user)
+        end
+
+        it 'should have returned the http status unprocessable entity' do
+          expect_status(:unprocessable_entity)
+        end
+      end
+
+    end
+
+  end
+
+  describe 'DELETE /api/v1/tweets/:id' do
+    context 'Unauthenticated' do
+      it_behaves_like :deny_without_authorization, :delete, '/api/v1/tweets/-1'
+    end
+
+    context 'Authenticated' do
+      context 'when user is the resource owner' do
+        before do
+          @user = create(:user)
+          @tweet = create(:tweet, user: @user)
+
+          delete "/api/v1/tweets/#{@tweet.id}", headers: header_with_authentication(@user)
+        end
+
+        it 'should have returned the http status no content' do
+          expect_status(:no_content)
+        end
+
+        it 'should have deleted de tweet' do
+          expect(Tweet.count).to eql(0)
+        end
+      end
+
+      context 'when user is not the resrouce owner' do
+        before do
+          user = create(:user)
+          tweet = create(:tweet)
+          delete "/api/v1/tweets/#{tweet.id}", headers: header_with_authentication(user)
+        end
+
+        it 'should have returned the http status forbidden' do
+          expect_status(:forbidden)
+        end
+      end
+
+    end
+  end
+
+  describe 'PUT /api/v1/tweets/:id' do
+    context 'Unauthenticated' do
+      it_behaves_like :deny_without_authorization, :put, '/api/v1/tweets/-1'
+    end
+
+    context 'Authenticated' do
+      before do
+        @user = create(:user)
+      end
+
+      context 'when user is the resource owner' do
+        before do
+          tweet = create(:tweet, user: @user)
+          @tweet_params = attributes_for(:tweet)
+          put "/api/v1/tweets/#{tweet.id}", params: { tweet: @tweet_params }, headers: header_with_authentication(@user)
+        end
+
+        it 'should have returned the http status success' do
+          expect_status(:success)
+        end
+
+        it 'should have returned the right updated tweet in json' do
+          expect(json).to include_json(@tweet_params)
+        end
+      end
+
+      context 'when user is not the resource owner' do
+        before do
+          tweet = create(:tweet)
+          tweet_params = attributes_for(:tweet)
+
+          put "/api/v1/tweets/#{tweet.id}", params: { tweet: tweet_params }, headers: header_with_authentication(@user)
+        end
+
+        it 'should have returned the http status forbidden' do
+          expect_status(:forbidden)
+        end
+      end
+
+    end
+    
+  end
 end
