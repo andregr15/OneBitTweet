@@ -33,6 +33,6 @@ class Ability
     can :read, User
     return unless user
     can :manage, Tweet, user_id: user.id
-    can :manage, ser, id: user.id
+    can :manage, User, id: user.id
   end
 end

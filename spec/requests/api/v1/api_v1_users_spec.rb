@@ -50,7 +50,7 @@ RSpec.describe "Api::V1::Users", type: :request do
     end
 
     context 'Authenticated' do
-      let(:user) { create(:user) }
+      let(:user) { create(:user)}
       let(:following_number) { Random.rand(9) }
       let(:followers_number) { Random.rand(9) }
       let(:tweet_number)     { Random.rand(9) }
@@ -66,7 +66,7 @@ RSpec.describe "Api::V1::Users", type: :request do
       it { expect(response).to have_http_status(:success) }
 
       it 'should returns a valid user in json' do
-        expect(json).to eql(serialized(Api:V1:UserSerializer, user))
+        expect(json).to eql(serialized(Api::V1::UserSerializer, user))
       end
 
       it 'should returns the right number of followers' do
@@ -74,11 +74,11 @@ RSpec.describe "Api::V1::Users", type: :request do
       end
 
       it 'should returns the right number of followings' do
-        expect(json['followings_count']).to eql(following_number)
+        expect(json['following_count']).to eql(following_number)
       end
 
       it 'should returns the right number of tweets' do
-        expect(json['tweet_count']).to eql(tweet_number)
+        expect(json['tweets_count']).to eql(tweet_number)
       end
     end 
   end
@@ -98,7 +98,7 @@ RSpec.describe "Api::V1::Users", type: :request do
           end
 
           it 'should have returned no content http status' do
-            expect_status(:no_content)
+            expect(response).to have_http_status(:no_content)
           end
 
           it 'should have deleted the user' do
@@ -111,11 +111,11 @@ RSpec.describe "Api::V1::Users", type: :request do
             user = create(:user)
             other_user = create(:user)
 
-            delete "/api/v1/users/#{other_user.id}", headers: header_with_authentication(@user)
+            delete "/api/v1/users/#{other_user.id}", headers: header_with_authentication(user)
           end
 
           it 'should have returned forbidden http status' do
-            expect_status(:forbidden)
+            expect(response).to have_http_status(:forbidden)
           end
         end
       end
@@ -128,7 +128,7 @@ RSpec.describe "Api::V1::Users", type: :request do
         end
 
         it 'should have returned not found http status' do
-          expect_status(:not_found)
+          expect(response).to have_http_status(:not_found)
         end
       end
     end
@@ -142,7 +142,7 @@ RSpec.describe "Api::V1::Users", type: :request do
       end
 
       it 'should have returned the http status created' do
-        expect_response(:created)
+        expect(response).to have_http_status(:created)
       end
 
       it 'should have returned the right user in json' do
@@ -162,7 +162,7 @@ RSpec.describe "Api::V1::Users", type: :request do
       end
 
       it 'should have returned the http status unprocessable_entity' do
-        expect_response(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_entity)
       end
     end
 
@@ -179,12 +179,11 @@ RSpec.describe "Api::V1::Users", type: :request do
           before do
             user = create(:user)
             @user_params = attributes_for(:user)
-
             put "/api/v1/users/#{user.id}", params: { user: @user_params }, headers: header_with_authentication(user)
           end
 
           it 'should have returned the http status success' do
-            expect_response(:success)
+            expect(response).to have_http_status(:success)
           end
 
           it 'should have returned the json with the user updated' do
@@ -195,12 +194,12 @@ RSpec.describe "Api::V1::Users", type: :request do
         context 'with invalid params' do
           before do
             user = create(:user)
-            user_params = { foo: :bar }
+            user_params = { name: nil }
             put "/api/v1/users/#{user.id}", params: { user: user_params }, headers: header_with_authentication(user)
           end
 
           it 'should have returned the http status unprocessable entity' do
-            expect_status(:unprocessable_entity)
+            expect(response).to have_http_status(:unprocessable_entity)
           end
 
         end
@@ -216,7 +215,7 @@ RSpec.describe "Api::V1::Users", type: :request do
         end
 
         it 'should have returnet the http status forbidden' do
-          expect_status(:forbidden)
+          expect(response).to have_http_status(:forbidden)
         end
       end
     end
@@ -228,17 +227,17 @@ RSpec.describe "Api::V1::Users", type: :request do
         @user = create(:user)
         following_number = Random.rand(15..25)
 
-        following_number.times { user.follow(create(:user)) }
+        following_number.times { @user.follow(create(:user)) }
       end
 
       it 'should have returned the http status success' do
         get "/api/v1/users/#{@user.id}/following?pages=1"
-        expect_response(:success)
+        expect(response).to have_http_status(:success)
       end
 
       it 'should have returned the right following' do
         get "/api/v1/users/#{@user.id}/following?page=1"
-        expect(json).to eql(each_serialized(Api::V1::UserSerializer, @user.following_users[0..14]))
+        expect(json).to eql(JSON.parse(each_serialized(Api::V1::UserSerializer, @user.following_users[0..14]))) 
       end
 
       it 'should have returned 15 elements on first page' do
@@ -248,7 +247,7 @@ RSpec.describe "Api::V1::Users", type: :request do
 
       it 'should have returned the remaining elements on second page' do
         get "/api/v1/users/#{@user.id}/following?page=2"
-        remaining = @user.following_users.count -15
+        remaining = @user.following_users.count - 15
         expect(json.count).to eql(remaining)
       end
     end
@@ -260,7 +259,7 @@ RSpec.describe "Api::V1::Users", type: :request do
       end
       
       it 'should have returned the http status not found' do
-        expect_status(:not_found)
+        expect(response).to have_http_status(:not_found)
       end
     end
   end
@@ -276,16 +275,16 @@ RSpec.describe "Api::V1::Users", type: :request do
 
       it 'should have returned the http status success' do
         get "/api/v1/users/#{@user.id}/followers?page=1"
-        expect_status(:success)
+        expect(response).to have_http_status(:success)
       end
 
       it 'should have returned the right followers' do
         get "/api/v1/users/#{@user.id}/followers?page=1"
-        expect(json).to eql(each_serialized(Api::V1::UserSerializer, @user.followers[0..14]))
+        expect(json).to eql(JSON.parse(each_serialized(Api::V1::UserSerializer, @user.followers[0..14])))
       end
 
       it 'should have returned 15 elements on first page' do
-        get "/api/v1/users/#{@user.id}/followers?pages=1"
+        get "/api/v1/users/#{@user.id}/followers?page=1"
         expect(json.count).to eql(15)
       end
 
@@ -303,7 +302,7 @@ RSpec.describe "Api::V1::Users", type: :request do
       end
 
       it 'should have returned the http status not found' do
-        expect_status(:not_found)
+        expect(response).to have_http_status(:not_found)
       end
     end
 
