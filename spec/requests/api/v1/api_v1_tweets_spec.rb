@@ -12,7 +12,7 @@ RSpec.describe "Api::V1::Tweets", type: :request do
 
       it 'should have returned the http status success' do
         get "/api/v1/tweets?user_id=#{@user.id}&page=1", headers: header_with_authentication(@user)
-        expect_status(:success)
+        expect(response).to have_http_status(:success)
       end
 
       it 'should have returned the right tweets' do
@@ -43,7 +43,7 @@ RSpec.describe "Api::V1::Tweets", type: :request do
       end
 
       it 'should have returned the http status not found' do
-        expect_status(:not_found)
+        expect(response).to have_http_status(:not_found)
       end
     end
   end
@@ -61,7 +61,7 @@ RSpec.describe "Api::V1::Tweets", type: :request do
         end
 
         it 'should have returned the http status success' do
-          expect_status(:success)
+          expect(response).to have_http_status(:success)
         end
 
         it 'should have returned a valid tweet in json' do
@@ -69,7 +69,7 @@ RSpec.describe "Api::V1::Tweets", type: :request do
         end
 
         it 'should have checked if the tweet owner is present' do
-          expect(json['user']).to eql(serializerd(Api::V1::UserSerializer, @tweet.user))
+          expect(json['user']).to eql(serialized(Api::V1::UserSerializer, @tweet.user))
         end
       end
 
@@ -82,7 +82,7 @@ RSpec.describe "Api::V1::Tweets", type: :request do
         end
 
         it 'should have returned the http status success' do
-          expect_status(:success)
+          expect(response).to have_http_status(:success)
         end
 
         it 'should have returned a valid tweet in json' do
@@ -105,7 +105,7 @@ RSpec.describe "Api::V1::Tweets", type: :request do
         end
 
         it 'should have returned the http status not found' do
-          expect_status(:not_found)
+          expect(response).to have_http_status(:not_found)
         end
       end
 
@@ -115,7 +115,7 @@ RSpec.describe "Api::V1::Tweets", type: :request do
 
   describe 'POST /api/v1/tweets/' do
     context 'Unauthenticated' do
-      it_behaves_like :deny_without_authorization, :post, '/api/v1/tweets/-1'
+      it_behaves_like :deny_without_authorization, :post, '/api/v1/tweets/'
     end
 
     context 'Authenticated' do
@@ -131,7 +131,7 @@ RSpec.describe "Api::V1::Tweets", type: :request do
           end
 
           it 'should have returned the http status created' do
-            expect_status(:created)
+            expect(response).to have_http_status(:created)
           end
 
           it 'should have returned the right tweet in json' do
@@ -152,11 +152,11 @@ RSpec.describe "Api::V1::Tweets", type: :request do
           end
 
           it 'should have returned the http status created' do
-            expect_status(:created)
+            expect(response).to have_http_status(:created)
           end
 
           it 'should have returned the right tweet in json' do
-            expect(json).to include_json(@tweet_params)
+            expect(json).to eql(serialized(Api::V1::TweetSerializer, @tweet_original))
           end
 
           it 'should have returned the right original tweet in json' do
@@ -164,7 +164,7 @@ RSpec.describe "Api::V1::Tweets", type: :request do
           end
 
           it 'should have created the tweet' do
-            expect(Tweet.count).to eql(1)
+            expect(Tweet.count).to eql(2)
           end
         end
       end
@@ -176,7 +176,7 @@ RSpec.describe "Api::V1::Tweets", type: :request do
         end
 
         it 'should have returned the http status unprocessable entity' do
-          expect_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_entity)
         end
       end
 
@@ -199,7 +199,7 @@ RSpec.describe "Api::V1::Tweets", type: :request do
         end
 
         it 'should have returned the http status no content' do
-          expect_status(:no_content)
+          expect(response).to have_http_status(:no_content)
         end
 
         it 'should have deleted de tweet' do
@@ -215,7 +215,7 @@ RSpec.describe "Api::V1::Tweets", type: :request do
         end
 
         it 'should have returned the http status forbidden' do
-          expect_status(:forbidden)
+          expect(response).to have_http_status(:forbidden)
         end
       end
 
@@ -240,7 +240,7 @@ RSpec.describe "Api::V1::Tweets", type: :request do
         end
 
         it 'should have returned the http status success' do
-          expect_status(:success)
+          expect(response).to have_http_status(:success)
         end
 
         it 'should have returned the right updated tweet in json' do
@@ -257,7 +257,7 @@ RSpec.describe "Api::V1::Tweets", type: :request do
         end
 
         it 'should have returned the http status forbidden' do
-          expect_status(:forbidden)
+          expect(response).to have_http_status(:forbidden)
         end
       end
 
