@@ -17,7 +17,7 @@ RSpec.describe "Api::V1::Tweets", type: :request do
 
       it 'should have returned the right tweets' do
         get "/api/v1/tweets?user_id=#{@user.id}&page=1", headers: header_with_authentication(@user)
-        expect(json).to eql(each_serialized(Api::V1::TweetSerializer, @user.tweets[0..14]))
+        expect(json).to eql(JSON.parse(each_serialized(Api::V1::TweetSerializer, @user.tweets[0..14])))
       end
 
       it 'should have returned 15 elements on first page' do
@@ -156,7 +156,7 @@ RSpec.describe "Api::V1::Tweets", type: :request do
           end
 
           it 'should have returned the right tweet in json' do
-            expect(json).to eql(serialized(Api::V1::TweetSerializer, @tweet_original))
+            expect(json).to include_json(@tweet_params)
           end
 
           it 'should have returned the right original tweet in json' do

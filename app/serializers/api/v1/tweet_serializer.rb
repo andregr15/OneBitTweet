@@ -22,6 +22,6 @@ class Api::V1::TweetSerializer < ActiveModel::Serializer
   end
 
   def liked
-    object.liked_by current_user
+    object.liked_by @current_user
   end
 end
