@@ -1,6 +1,6 @@
 class Api::V1::LikesController < Api::V1::ApiController
-  before_action :set_tweet
   before_action :authenticate_user
+  before_action :set_tweet
 
   def create
     if current_user.likes @tweet

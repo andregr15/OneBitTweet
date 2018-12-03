@@ -1,6 +1,6 @@
 class Api::V1::FollowsController < Api::V1::ApiController
-  before_action :set_user
   before_action :authenticate_user
+  before_action :set_user
 
   def create
     if current_user.follow(@user)
