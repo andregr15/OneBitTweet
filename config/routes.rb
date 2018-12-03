@@ -2,6 +2,9 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       post 'user_token' => 'user_token#create'
+      get 'search', to: 'search#index'
+      get 'autocomplete', to: 'search#autocomplete'
+      get 'timeline', to: 'timeline#index'
 
       resources :tweets, only: %i[index show create update destroy] do
         member do
