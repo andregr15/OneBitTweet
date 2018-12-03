@@ -22,6 +22,7 @@ class Api::V1::TweetSerializer < ActiveModel::Serializer
   end
 
   def liked
-    object.liked_by @current_user
+    # scope = current_user (seted on api_controller by serialization_scope :current_user)
+    (scope)? (scope.liked? object) : false
   end
 end

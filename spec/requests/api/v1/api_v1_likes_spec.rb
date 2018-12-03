@@ -23,7 +23,7 @@ RSpec.describe "Api::V1::Likes", type: :request do
       end
 
       it 'have the right user' do
-        expect(@tweet.get_likes[0].voter_id).to eql(@user.id)
+        expect(@user.liked? @tweet).to eql(true)
       end
     end
   end
@@ -46,11 +46,11 @@ RSpec.describe "Api::V1::Likes", type: :request do
       end
 
       it 'have remove the right like' do
-        expect(@tweet.get_dislikes.size).to eql(1)
+        expect(@tweet.get_likes.size).to eql(0)
       end
 
       it 'have remove the right user' do
-        expect(@tweet.get_dislikes[0].voter_id).to eql(@user.id)
+        expect(@user.liked? @tweet).to eql(false)
       end
     end
   end

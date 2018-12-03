@@ -11,7 +11,7 @@ class Api::V1::LikesController < Api::V1::ApiController
   end
 
   def destroy
-    current_user.dislikes @tweet
+    @tweet.unliked_by current_user
   end
 
   private

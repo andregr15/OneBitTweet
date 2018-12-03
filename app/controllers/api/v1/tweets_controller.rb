@@ -1,6 +1,6 @@
 class Api::V1::TweetsController < Api::V1::ApiController
+  before_action { current_user }
   before_action :authenticate_user, except: [:show]
-  before_action :set_current_user
   before_action :set_tweet, except: %i[create index]
   before_action :set_page, only: [:index]
 
@@ -49,9 +49,5 @@ class Api::V1::TweetsController < Api::V1::ApiController
 
   def set_page
     @page = params[:page] || 1
-  end
-
-  def set_current_user
-    @current_user = (current_user)? current_user : nil
   end
 end
