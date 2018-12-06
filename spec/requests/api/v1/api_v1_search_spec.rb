@@ -5,8 +5,7 @@ RSpec.describe "Api::V1::Search", type: :request do
     context 'with invalid query params' do
       before do
         user = create(:user)
-        Tweet.reindex
-        User.reindex
+        
         get '/api/v1/search'
       end
 
@@ -24,15 +23,14 @@ RSpec.describe "Api::V1::Search", type: :request do
         @tweet = create(:tweet, user: @user)
         @tweet2 = create(:tweet, user: @user2)
         @tweet3 = create(:tweet, user: @user3)
+
+        Tweet.reindex
+        User.reindex
       end
 
       it 'returns the right user' do
-        get "/api/v1/search?query=teste"
-        p User.search(@user.name, page: 1)
-        p User.first
-        p @user.name
-        # p json
-        # expect(json['users']).to eql(serialized(Api::V1::UserSerializer, @user))
+        get "/api/v1/search?query=#{@user.name}"
+        expect(json['users'][0]).to eql(serialized(Api::V1::UserSerializer, @user))
       end
     end
   end
