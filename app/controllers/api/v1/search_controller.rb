@@ -1,8 +1,9 @@
-class Api::V1::SearchController < ApplicationController
+class Api::V1::SearchController < Api::V1::ApiController
   before_action :set_page
+  
   def index
     tweets = Tweet.search(params[:query], page: @page)
-    users = User.search(params[:query], page: @page)
+    users = User.search(params[:query], page:  @page)
 
     tweets_json = ActiveModelSerializers::SerializableResource.new(tweets, each_serializer: Api::V1::TweetSerializer)
     users_json = ActiveModelSerializers::SerializableResource.new(users, each_serializer: Api::V1::UserSerializer)
@@ -15,6 +16,6 @@ class Api::V1::SearchController < ApplicationController
   private
 
   def set_page
-    @page = params[:page] || 1
+    @page = (params[:page] || 1)
   end
 end
