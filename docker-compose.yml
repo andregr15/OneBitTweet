@@ -18,6 +18,7 @@ services:
     depends_on:
       - "postgres"
       - "redis"
+      - "elasticsearch"
     build: .
     command: bash start.sh
     ports:
@@ -25,8 +26,20 @@ services:
     volumes:
       - ".:/app"
       - "gems:/gems"
+    environment:
+      ELASTICSEARCH_URL: elasticsearch:9200
+
+  elasticsearch:
+    image: "elasticsearch:5.6.13-alpine"
+    ports:
+      - "9200:9200"
+    volumes:
+      - "elastic:/usr/share/elasticsearch/data"
+    environment:
+      - Des.network.host=0.0.0.0
 
 volumes:
   redis:
   postgres:
   gems:
+  elastic:

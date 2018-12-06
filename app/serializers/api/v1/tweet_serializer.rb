@@ -22,6 +22,7 @@ class Api::V1::TweetSerializer < ActiveModel::Serializer
   end
 
   def liked
-    object.liked_by @current_user
+    # (defined? current_user) wasn't working correctly
+    local_variables.include?(:current_user)? (current_user.liked? object) : false
   end
 end
