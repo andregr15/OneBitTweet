@@ -1,4 +1,5 @@
 class User < ApplicationRecord
+  mount_base64_uploader :photo, PhotoUploader
   has_secure_password
 
   validates_length_of :password,
@@ -25,6 +26,6 @@ class User < ApplicationRecord
     all_following.each do |user|
       timeline += user.tweets.map { |tweet| tweet }
     end
-    timeline.short_by!(&:created_at).reverse
+    timeline.sort_by!(&:created_at).reverse
   end
 end
