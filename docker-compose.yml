@@ -18,11 +18,22 @@ services:
     depends_on:
       - "postgres"
       - "redis"
-      - "elasticsearch"
     build: .
     command: bash start.sh
     ports:
       - "3000:3000"
+    volumes:
+      - ".:/app"
+      - "gems:/gems"
+
+  job:
+    depends_on:
+      - "postgres"
+      - "redis"
+      - "app"
+      - "elasticsearch"
+    build: .
+    command: bash start_jobs.sh
     volumes:
       - ".:/app"
       - "gems:/gems"

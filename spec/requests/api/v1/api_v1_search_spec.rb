@@ -32,6 +32,11 @@ RSpec.describe "Api::V1::Search", type: :request do
         get "/api/v1/search?query=#{@user.name}"
         expect(json['users'][0]).to eql(serialized(Api::V1::UserSerializer, @user))
       end
+
+      it 'returns the right tweet' do
+        get "/api/v1/search?query=#{@tweet.body}"
+        expect(json['tweets'][0]).to eql(serialized(Api::V1::TweetSerializer, @tweet))
+      end
     end
   end
 end

@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  mount Sidekiq::Web => '/sidekiq'
+  
   namespace :api do
     namespace :v1 do
       post 'user_token' => 'user_token#create'

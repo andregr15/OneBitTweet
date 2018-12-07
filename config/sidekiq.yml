@@ -1,0 +1,5 @@
+:schedule:
+  update_trendings:
+    cron: '* * * *'
+    class: UpdateTrendingsJob
+    queue: trendings

@@ -54,6 +54,9 @@ gem 'carrierwave'
 gem 'carrierwave-base64'
 gem 'cloudinary'
 
+# Job scheduler execution
+gem 'sidekiq-scheduler'
+
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
 # gem 'rack-cors'
 
