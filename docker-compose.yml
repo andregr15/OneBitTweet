@@ -25,6 +25,8 @@ services:
     volumes:
       - ".:/app"
       - "gems:/gems"
+    environment:
+      ELASTICSEARCH_URL: elasticsearch:9200
 
   job:
     depends_on:
