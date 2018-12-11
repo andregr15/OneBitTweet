@@ -1,10 +1,10 @@
-class UpdateTredingsJob < ApplicationJob
+class UpdateTrendingsJob < ApplicationJob
   queue_as :trendings
 
   def perform
     hashtags = { }
     DataStore.redis.scan_each(match: '#*').each do |hashtag|
-      hastags[hashtag] = DataStore.redis.get(hashtag)
+      hashtags[hashtag] = DataStore.redis.get(hashtag)
     end
 
     @trending = Trending.new(hashtags: hashtags.sort_by(&:last).reverse[0..4])
