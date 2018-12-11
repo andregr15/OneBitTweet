@@ -16,4 +16,19 @@ RSpec.describe UpdateTrendingsJob, type: :job do
       }.to have_enqueued_job.on_queue('trendings')
     end
   end
+
+  describe '#perform_now' do
+    before do
+      DataStore.redis.flushall
+      DataStore.redis.set('#rails', 10)
+      DataStore.redis.set('#ruby', 5)
+      DataStore.redis.set('#sidekiq', 1)
+      DataStore.redis.set('#docker', 50)
+      UpdateTrendingsJob.perform_now
+    end
+
+    it 'saved the trending with the right values' do
+      expect(Trending.last.hashtags).to eql([['#docker', '50'], ['#rails', '10'], ['#ruby', '5'], ['#sidekiq', '1']])
+    end
+  end
 end

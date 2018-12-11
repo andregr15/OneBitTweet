@@ -19,6 +19,7 @@ class Api::V1::TweetsController < Api::V1::ApiController
   def create
     @tweet = Tweet.new(tweet_params.merge(user: current_user))
     if @tweet.save
+      AddHashtagsJob.perform_later(@tweet.body)
       render json: @tweet, status: :created
     else
       render json: { errors: @tweet.errors.full_messages }, status: :unprocessable_entity
