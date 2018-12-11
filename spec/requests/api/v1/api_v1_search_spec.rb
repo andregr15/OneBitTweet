@@ -16,7 +16,7 @@ RSpec.describe "Api::V1::Search", type: :request do
 
     context 'with valid query params' do
       before do
-        @user = create(:user, name: 'teste')
+        @user = create(:user)
         @user2 = create(:user)
         @user3 = create(:user)
 
@@ -33,9 +33,29 @@ RSpec.describe "Api::V1::Search", type: :request do
         expect(json['users'][0]).to eql(serialized(Api::V1::UserSerializer, @user))
       end
 
+      it 'returns the right user2' do
+        get "/api/v1/search?query=#{@user2.name}"
+        expect(json['users'][0]).to eql(serialized(Api::V1::UserSerializer, @user2))
+      end
+
+      it 'returns the right user3' do
+        get "/api/v1/search?query=#{@user3.name}"
+        expect(json['users'][0]).to eql(serialized(Api::V1::UserSerializer, @user3))
+      end
+
       it 'returns the right tweet' do
         get "/api/v1/search?query=#{@tweet.body}"
         expect(json['tweets'][0]).to eql(serialized(Api::V1::TweetSerializer, @tweet))
+      end
+
+      it 'returns the right tweet2' do
+        get "/api/v1/search?query=#{@tweet2.body}"
+        expect(json['tweets'][0]).to eql(serialized(Api::V1::TweetSerializer, @tweet2))
+      end
+
+      it 'returns the right tweet3' do
+        get "/api/v1/search?query=#{@tweet3.body}"
+        expect(json['tweets'][0]).to eql(serialized(Api::V1::TweetSerializer, @tweet3))
       end
     end
   end
