@@ -1,2 +1,0 @@
-class Treding < ApplicationRecord
-end

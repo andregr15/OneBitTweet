@@ -9,6 +9,7 @@ Rails.application.routes.draw do
       get 'search', to: 'search#index'
       get 'autocomplete', to: 'search#autocomplete'
       get 'timeline', to: 'timeline#index'
+      get 'trending', to: 'trending#index'
 
       resources :tweets, only: %i[index show create update destroy] do
         member do

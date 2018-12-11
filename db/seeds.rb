@@ -5,3 +5,12 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
+
+# Add 3 hashtags ruby
+DataStore.redis.set('#ruby', 3)
+# Add 30 hashtags rails
+DataStore.redis.set('#rails', 30)
+# Add 1 hashtag docker
+DataStore.redis.set('#docker', 1)
+# Add 10 hashtags OneBitCode
+DataStore.redis.set('#onebitcode', 10)

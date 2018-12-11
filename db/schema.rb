@@ -27,7 +27,7 @@ ActiveRecord::Schema.define(version: 2018_12_07_180423) do
     t.index ["follower_id", "follower_type"], name: "fk_follows"
   end
 
-  create_table "tredings", force: :cascade do |t|
+  create_table "trendings", force: :cascade do |t|
     t.jsonb "hashtags"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
