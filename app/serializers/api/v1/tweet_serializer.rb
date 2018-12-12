@@ -1,5 +1,5 @@
 class Api::V1::TweetSerializer < ActiveModel::Serializer
-  attributes :id, :body, :tweet_original_id, :retweets_count, :likes_count, :liked
+  attributes :id, :body, :tweet_original_id, :retweets_count, :likes_count, :liked, :photo
   belongs_to :tweet_original
   belongs_to :user
 

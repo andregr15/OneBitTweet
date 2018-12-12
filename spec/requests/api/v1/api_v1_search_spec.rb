@@ -59,4 +59,31 @@ RSpec.describe "Api::V1::Search", type: :request do
       end
     end
   end
+
+  describe 'GET /api/v1/autocomplete' do
+    context 'with invalid query params' do
+      before do 
+        user = create(:user)
+        tweet = create(:tweet, user: user)
+        get '/api/v1/autocomplete'
+      end
+
+      it { expect(response).to have_http_status(:success) }
+      it { expect(json['results'].count).to eql(0) }
+    end
+
+    context 'with valid query params' do
+      before do
+        @user = create(:user, name: 'teste')
+        @tweet = create(:tweet, user: @user, body: 'test tteste')
+        User.reindex
+        Tweet.reindex
+        get '/api/v1/autocomplete?query=te'
+      end
+
+      it { expect(response).to have_http_status(:success) }
+      it { expect(json['results'][0]).to eql('test tteste') }
+      it { expect(json['results'][1]).to eql('teste') }
+    end
+  end
 end

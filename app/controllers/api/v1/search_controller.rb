@@ -11,7 +11,26 @@ class Api::V1::SearchController < Api::V1::ApiController
     render json: { tweets: tweets_json, users: users_json}
   end
 
-  def autocomplete;  end
+  def autocomplete  
+    ret = Tweet.search(
+      params[:query], {
+        fields: ['body'],
+        match: :word_start,
+        limit: 10,
+        load: false,
+        misspellings: { bellow: 5 }
+      }).map(&:body)
+
+    ret += User.search(params[:query], {
+      fields: ["name"],
+      match: :word_start,
+      limit: 10,
+      load: false,
+      misspellings: {below: 5}
+    }).map(&:name)
+
+    render json: { results: ret }
+  end
 
   private
 
