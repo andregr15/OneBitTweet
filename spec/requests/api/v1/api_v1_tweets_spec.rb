@@ -3,36 +3,67 @@ require 'rails_helper'
 RSpec.describe "Api::V1::Tweets", type: :request do
   describe 'GET /api/v1/tweets?user_id=:id&page=:page' do
     context 'when user exists' do
-      before do
-        @user = create(:user)
-        tweets_number = Random.rand(15..25)
+      context 'tweets' do
+        before do
+          @user = create(:user)
+          tweets_number = Random.rand(15..25)
 
-        tweets_number.times { create(:tweet, user: @user) }
-      end
+          tweets_number.times { create(:tweet, user: @user) }
+        end
 
-      it 'should have returned the http status success' do
-        get "/api/v1/tweets?user_id=#{@user.id}&page=1", headers: header_with_authentication(@user)
-        expect(response).to have_http_status(:success)
-      end
+        it 'should have returned the http status success' do
+          get "/api/v1/tweets?user_id=#{@user.id}&page=1", headers: header_with_authentication(@user)
+          expect(response).to have_http_status(:success)
+        end
 
-      it 'should have returned the right tweets' do
-        get "/api/v1/tweets?user_id=#{@user.id}&page=1", headers: header_with_authentication(@user)
-        expect(json).to eql(JSON.parse(each_serialized(Api::V1::TweetSerializer, @user.tweets[0..14])))
-      end
+        it 'should have returned the right tweets' do
+          get "/api/v1/tweets?user_id=#{@user.id}&page=1", headers: header_with_authentication(@user)
+          expect(json).to eql(JSON.parse(each_serialized(Api::V1::TweetSerializer, @user.tweets[0..14])))
+        end
 
-      it 'should have returned 15 elements on first page' do
-        get "/api/v1/tweets?user_id=#{@user.id}&page=1", headers: header_with_authentication(@user)
-        expect(json.count).to eql(15)
-      end
+        it 'should have returned 15 elements on first page' do
+          get "/api/v1/tweets?user_id=#{@user.id}&page=1", headers: header_with_authentication(@user)
+          expect(json.count).to eql(15)
+        end
 
-      it 'should have returned the remaining elements on second page' do
-        get "/api/v1/tweets?user_id=#{@user.id}&page=2", headers: header_with_authentication(@user)
-        remaining = @user.tweets.count - 15
-        expect(json.count).to eql(remaining)
+        it 'should have returned the remaining elements on second page' do
+          get "/api/v1/tweets?user_id=#{@user.id}&page=2", headers: header_with_authentication(@user)
+          remaining = @user.tweets.count - 15
+          expect(json.count).to eql(remaining)
+        end
       end
-    end
 
       # Verifique se os tweets que são retweets possuem os tweets originais associados
+      context 'retweets' do
+        before do
+          @user = create(:user)
+          @tweet = create(:tweet, user: @user)
+          tweets_number = Random.rand(15..24)
+
+          tweets_number.times { create(:tweet, user: @user, tweet_original: @tweet) }
+        end
+
+        it 'should have original tweet for first page' do
+          get "/api/v1/tweets?user_id=#{@user.id}&page=1", headers: header_with_authentication(@user)
+          json.drop(1).each do |t|
+            expect(t['tweet_original_id']).not_to be_nil
+            expect(t['tweet_original_id']).to eql(@tweet.id)
+            expect(t['tweet_original']).to eql(serialized(Api::V1::TweetSerializer, @tweet))
+          end
+        end
+  
+        it 'should have original tweet on second page' do
+          get "/api/v1/tweets?user_id=#{@user.id}&page=2", headers: header_with_authentication(@user)
+          
+          json.each do |t|
+            expect(t['tweet_original_id']).not_to be_nil
+            expect(t['tweet_original_id']).to eql(@tweet.id)
+            expect(t['tweet_original']).to eql(serialized(Api::V1::TweetSerializer, @tweet))
+          end
+        end
+      end
+
+    end
 
     context 'when user do not exists' do
       before do
