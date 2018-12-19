@@ -1,5 +1,5 @@
 :schedule:
   update_trendings:
-    cron: '0 0 * * * *'
+    cron: '0 0 * * *'
     class: UpdateTrendingsJob
     queue: trendings
