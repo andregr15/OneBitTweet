@@ -1,5 +1,5 @@
 class Api::V1::TweetSerializer < ActiveModel::Serializer
-  attributes :id, :body, :tweet_original_id, :retweets_count, :likes_count, :liked, :photo
+  attributes :id, :body, :tweet_original_id, :retweets_count, :likes_count, :liked, :photo, :time
   belongs_to :tweet_original
   belongs_to :user
 
@@ -24,5 +24,9 @@ class Api::V1::TweetSerializer < ActiveModel::Serializer
   def liked
     # (defined? current_user) wasn't working correctly
     local_variables.include?(:current_user)? (current_user.liked? object) : false
+  end
+
+  def time
+    object.created_at.strftime('%d/%m/%Y %H:%M')
   end
 end
