@@ -8,7 +8,7 @@ class Api::V1::TweetsController < Api::V1::ApiController
 
   def index
     user = User.find(params[:user_id])
-    @tweets = user.tweets.paginate(page: @page)
+    @tweets = user.tweets.order('created_at DESC').paginate(page: @page)
     render json: @tweets
   end
 
