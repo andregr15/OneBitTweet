@@ -1,4 +1,5 @@
 class Api::V1::UsersController < Api::V1::ApiController
+  before_action { current_user }
   before_action :authenticate_user, only: %i[current update destroy]
   before_action :set_user, only: %i[show destroy update following followers]
   load_and_authorize_resource except: %i[followers following create]
