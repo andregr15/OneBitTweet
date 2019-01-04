@@ -1,3 +1,6 @@
+require 'action_view'
+include ActionView::Helpers::DateHelper
+
 class Tweet < ApplicationRecord
   mount_base64_uploader :photo, PhotoUploader
   belongs_to :user
@@ -14,5 +17,9 @@ class Tweet < ApplicationRecord
 
   def should_index?
     !tweet_original.present?
+  end
+
+  def ago
+    distance_of_time_in_words(created_at, DateTime.now)
   end
 end

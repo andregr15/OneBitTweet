@@ -28,6 +28,6 @@ class Api::V1::TweetSerializer < ActiveModel::Serializer
   end
 
   def time
-    object.created_at.strftime('%d/%m/%Y %H:%M')
+    object.ago
   end
 end
